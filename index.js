@@ -30,10 +30,22 @@ app.get('/', async (req, res) => {
 
 const startServer = async () => {
   try {
-    connectDB(process.env.MONGODB_URL);
+    // Add debugging
+    console.log('Environment check:', {
+      mongoDbExists: !!process.env.MONGODB_URL,
+      port: process.env.PORT,
+      nodeEnv: process.env.NODE_ENV
+    });
+
+    if (!process.env.MONGODB_URL) {
+      throw new Error('MONGODB_URL is not defined in environment');
+    }
+
+    await connectDB(process.env.MONGODB_URL);
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (error) {
-    console.log(error);
+    console.error('Server startup failed:', error);
+    process.exit(1);
   }
 };
 
